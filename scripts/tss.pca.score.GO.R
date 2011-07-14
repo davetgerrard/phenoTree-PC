@@ -35,7 +35,7 @@ tss.pca.score.annot[grep('MYO', tss.pca.score.annot$name),]
 # split genename, uniprot ID and uniprot accession from 'name'
 tss.pca.score.annot$spAccession <- matrix(unlist(strsplit(as.character(tss.pca.score.annot$name),";",fixed=T)),ncol=3,byrow=T)[,2]
 tss.pca.score.annot$spId <- matrix(unlist(strsplit(as.character(tss.pca.score.annot$name),";",fixed=T)),ncol=3,byrow=T)[,3]
-
+tss.pca.score.annot$spAccession <- sub('-[0-9]+','',tss.pca.score.annot$spAccession)	# remove protein isoform numbers
 
 ## hypothesise that PC4 should be enriched for muscle development genes
 ## pc5 should be enriched for 
@@ -104,8 +104,23 @@ GOdata <- updateGenes(GOdata,geneList,topDiffGenesReturnAll)
 test.stat <- new("classicScore", testStatistic = GOWilcoxTest2Sided, name = "Wilcox tests") 
 resultWilcox <- getSigGroups(GOdata, test.stat)
 
-test.stat <- new("elimScore", testStatistic = GOWilcoxTest2Sided, name = "Wilcox test", cutOff = elimCutOff)    #,alternative="less"
+test.stat <- new("elimScore", testStatistic = GOWilcoxTest2Sided, name = "Wilcox test", cutOff = elimCutOff)    
 resultElimWilcox <- getSigGroups(GOdata, test.stat)
+
+
+test.stat <- new("classicScore", testStatistic = GOWilcoxTest1Sided , scoreOrder="increasing", name = "Wilcox tests") 
+resultWilcoxIncreasing <- getSigGroups(GOdata, test.stat)
+
+test.stat <- new("elimScore", testStatistic = GOWilcoxTest1Sided , scoreOrder="increasing", name = "Wilcox test", cutOff = elimCutOff)    #,alternative="greater"
+resultElimWilcoxIncreasing <- getSigGroups(GOdata, test.stat)
+
+
+test.stat <- new("classicScore", testStatistic = GOWilcoxTest1Sided, scoreOrder="decreasing", name = "Wilcox tests") 
+resultWilcoxDecreasing <- getSigGroups(GOdata, test.stat)
+
+test.stat <- new("elimScore", testStatistic = GOWilcoxTest1Sided, scoreOrder="decreasing", name = "Wilcox test", cutOff = elimCutOff)    #,alternative="less"
+resultElimWilcoxDecreasing <- getSigGroups(GOdata, test.stat)
+
 
 #resultElimWilcoxAdj <- resultElimWilcox 
 #score(resultElimWilcoxAdj) <- qvalue(score(resultElimWilcox))$qvalue
@@ -131,6 +146,14 @@ manual.Wilcox <- data.frame(Wilcox=score(resultWilcox),goTerm=names(score(result
 manual.elimWilcox <- data.frame(elimWilcox=score(resultElimWilcox),goTerm=names(score(resultElimWilcox)))
 manual.absWilcox <- data.frame(absWilcox =score(resultWilcoxAbs),goTerm=names(score(resultWilcoxAbs)))
 manual.elimAbsWilcox <- data.frame(elimAbsWilcox=score(resultElimWilcoxAbs),goTerm=names(score(resultElimWilcoxAbs)))
+manual.WilcoxIncreasing <- data.frame(WilcoxIncreasing=score(resultWilcoxIncreasing),goTerm=names(score(resultWilcoxIncreasing)))
+manual.elimWilcoxIncreasing <- data.frame(elimWilcoxIncreasing =score(resultElimWilcoxIncreasing),goTerm=names(score(resultElimWilcoxIncreasing)))
+manual.WilcoxDecreasing <- data.frame(WilcoxDecreasing=score(resultWilcoxDecreasing),goTerm=names(score(resultWilcoxDecreasing)))
+manual.elimWilcoxDecreasing <- data.frame(elimWilcoxDecreasing=score(resultElimWilcoxDecreasing),goTerm=names(score(resultElimWilcoxDecreasing)))
+#resultWilcoxIncreasing
+#resultElimWilcoxIncreasing
+#resultWilcoxDecreasing
+#resultElimWilcoxDecreasing
 manual.KS <- data.frame(KS=score(resultKS),goTerm=names(score(resultKS)))
 manual.elimKS <- data.frame(elimKS=score(resultElimKS),goTerm=names(score(resultElimKS)))
 manual.termStats <- termStat(GOdata,names(score(resultWilcox)))
@@ -142,6 +165,10 @@ thisGoResults <- merge(manual.termStats, manual.Wilcox, by="goTerm")
 thisGoResults <- merge(thisGoResults ,manual.elimWilcox, by="goTerm")
 thisGoResults <- merge(thisGoResults ,manual.absWilcox, by="goTerm")
 thisGoResults <- merge(thisGoResults ,manual.elimAbsWilcox, by="goTerm")
+thisGoResults <- merge(thisGoResults ,manual.WilcoxIncreasing, by="goTerm")
+thisGoResults <- merge(thisGoResults ,manual.elimWilcoxIncreasing, by="goTerm")
+thisGoResults <- merge(thisGoResults ,manual.WilcoxDecreasing, by="goTerm")
+thisGoResults <- merge(thisGoResults ,manual.elimWilcoxDecreasing, by="goTerm")
 thisGoResults <- merge(thisGoResults ,manual.KS, by="goTerm")
 thisGoResults <- merge(thisGoResults ,manual.elimKS, by="goTerm")
 
@@ -159,4 +186,41 @@ return(summmaryPcResultList)
 }	# end of runGoForAll
 
 ############
+
+#summmaryPcResultList <- list()	# gonna have a separate data frame for each PC.
+#for (i in 1:6)  {#
+#	summmaryPcResultList[[i]] <- data.frame()
+#}
+
+
+
+
+
+
+### save the results.
+
+for(i in 1:length(summmaryPcResultList)) {
+	fileName <- paste("GoSummaryByPc",i,"tab",sep=".")
+	write.table(summmaryPcResultList[[i]], file=fileName, sep="\t",row.names=F,quote=F)
+}
+
+
+
+#"GO:0007420"	# brain development. Highly sig for PC3 in elimWilcox, elimAbsWilcox but not elimKS
+
+
+
+
+
+######################################### FUNC CLUSTERING
+
+#### need to re-do functional clustering. 
+
+protTerms <- na.omit(prot2go[c(tss.pca.score.annot$spAccession)])
+
+
+
+
+
+
 
