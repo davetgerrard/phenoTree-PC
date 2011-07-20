@@ -18,8 +18,8 @@ old.o <- options(scipen=999)
 
 
 #source(getRegul...
-tssInBins <- read.delim("tssInBins.tab", header=T)
-tesInBins <- read.delim("tesInBins.tab", header=T)
+tssInBins <- read.delim("output/tssInBins.tab", header=T)
+tesInBins <- read.delim("output/tesInBins.tab", header=T)
 
 # compare pca scores for tss and tes bins
 # might be better to use raw counts scores for this?
@@ -33,9 +33,9 @@ tes.pca.scores <- filteredChromSet.pca.6.scores[match(tesInBins$binRef, row.name
 random.pca.scores <- filteredChromSet.pca.6.scores[sample(1:nrow(filteredChromSet.pca.6.scores),20000), ]
 rm(filteredChromSet.pca.6.scores)  # shouldn't need this anymore.
 
-write.table(tss.pca.scores, file="tss.pca.score.tab", row.names=F, quote=F, sep="\t")
-write.table(tes.pca.scores, file="tes.pca.score.tab", row.names=F, quote=F, sep="\t")
-write.table(random.pca.scores, file="random.pca.score.tab", row.names=F, quote=F, sep="\t")
+write.table(tss.pca.scores, file="output/tss.pca.score.tab", row.names=T, quote=F, sep="\t")
+write.table(tes.pca.scores, file="output/tes.pca.score.tab", row.names=T, quote=F, sep="\t")
+write.table(random.pca.scores, file="output/random.pca.score.tab", row.names=T, quote=F, sep="\t")
 
 par(mfrow=c(2,3))
 for ( i in 1:6)  {

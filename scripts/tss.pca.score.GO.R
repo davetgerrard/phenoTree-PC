@@ -20,8 +20,8 @@ old.o <- options(scipen=999)
 # run Gene set enrichment on tss.pca.scores
 
 
+tss.pca.scores <- read.delim("output/tss.pca.score.tab", header=T)
 
-tss.pca.scores <- read.delim("tss.pca.score.tab", header=T)
 
 setwd("C:/Users/dave/HalfStarted/PhenotypeTree/")
 
@@ -40,6 +40,8 @@ tss.pca.score.annot$spAccession <- sub('-[0-9]+','',tss.pca.score.annot$spAccess
 ## hypothesise that PC4 should be enriched for muscle development genes
 ## pc5 should be enriched for 
 
+plot(tss.pca.score.annot$Comp.4, tss.pca.score.annot$Comp.5)
+
 
 # TASKS:-
 # load topGo and protein to go map
@@ -50,6 +52,54 @@ tss.pca.score.annot$spAccession <- sub('-[0-9]+','',tss.pca.score.annot$spAccess
 
 
 source("scripts/setUpProteinTopGo.R")
+
+
+#### list proteins for a GO term, accounting for ontology
+listProtsInGo <- function(goTerm,ontology)  {
+	if(ontology == "BP") {
+		genesInTerm(GOdata.BP,goTerm)[[1]]
+	} else if(ontology == "MF") {
+		genesInTerm(GOdata.MF,goTerm)[[1]]
+	} else if(ontology == "CC") {
+		genesInTerm(GOdata.CC,goTerm)[[1]]
+	}
+}
+
+geneList <- tss.pca.score.annot$Comp.1
+names(geneList) <- tss.pca.score.annot$spAccession
+nodeSize
+
+GOdata.BP <- new("topGOdata",
+  description =  "Histone mods data set",
+              ontology = "BP" ,
+              allGenes = geneList,
+  geneSelectionFun = topDiffGenesReturnAll ,
+              nodeSize = topGo.nodeSizeValue ,
+              annot = annFUN.GO2genes,
+GO2genes=go2prot 
+               )
+
+GOdata.MF <- new("topGOdata",
+  description =  "Histone mods data set",
+              ontology = "MF" ,
+              allGenes = geneList,
+  geneSelectionFun = topDiffGenesReturnAll ,
+              nodeSize = topGo.nodeSizeValue ,
+              annot = annFUN.GO2genes,
+GO2genes=go2prot 
+               )
+
+GOdata.CC <- new("topGOdata",
+  description =  "Histone mods data set",
+              ontology = "CC" ,
+              allGenes = geneList,
+  geneSelectionFun = topDiffGenesReturnAll ,
+              nodeSize = topGo.nodeSizeValue ,
+              annot = annFUN.GO2genes,
+GO2genes=go2prot 
+               )
+
+
 
 #multiple runs. cycle through PCs, ontology terms.
 pcs <- 1:4

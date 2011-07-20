@@ -16,7 +16,7 @@ library(topGO)
 
 ######################## FUNCTIONS
 
-GOWilcoxTestGreater <- function (object,alternativeType="greater") 
+GOWilcoxTest1Sided <- function (object,alternativeType="greater") # "greater" or "less"
 {
     N <- numAllMembers(object)
     na <- numMembers(object)

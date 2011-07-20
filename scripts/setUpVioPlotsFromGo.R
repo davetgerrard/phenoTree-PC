@@ -10,20 +10,21 @@ addGroupScoresToGroupTable <- function(groupTable,groupIds,groupName,scoreTable,
 #pc.i <- 1
 
 library(lattice)
+library(gplots)
 
-bwPlotsAsPdf <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =15)  {
+bwPlotsAsPdf <- function(pca.scores,orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =15)  {
 	pdfName <- paste("vioPlotsByPC",orderBy.PC,"Below",pcTableSigThreshold,"Max",numbGraphResults,"pdf",sep=".")
 
 	pdf(pdfName, paper="a4")
 	frontPageText <- paste(pdfName,"\nUsing", orderBy.PC, "below", pcTableSigThreshold,"\nLimited to",numbGraphResults,"results",sep=" ")
 	textplot(frontPageText)
 	for(pc.i in 1:length(summmaryPcResultList)) {
-		plotPCsFromSummary(orderBy.PC=orderBy.PC, pcTableSigThreshold=pcTableSigThreshold, numbGraphResults=numbGraphResults, pc.i=pc.i)
+		plotPCsFromSummary(pca.scores=pca.scores, orderBy.PC=orderBy.PC, pcTableSigThreshold=pcTableSigThreshold, numbGraphResults=numbGraphResults, pc.i=pc.i)
 	}
 	dev.off()
 }
 
-bwPlotsAsFigs <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =15, figType="tiff")  {
+bwPlotsAsFigs <- function(pca.scores, orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =15, figType="tiff")  {
 	#frontPageText <- paste(pdfName,"\nUsing", orderBy.PC, "below", pcTableSigThreshold,"\nLimited to",numbGraphResults,"results",sep=" ")
 	#textplot(frontPageText)
 	#op <- par(cex=1.5)
@@ -33,14 +34,14 @@ bwPlotsAsFigs <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, 
 		fileName <- paste("vioPlotsByPC",pc.i,orderBy.PC,"Below",pcTableSigThreshold,"Max",numbGraphResults,figType,sep=".")
 		fileName <- paste(plotDir,fileName,sep="/")
 		tiff(fileName, compression="lzw",width=180, height=480,units="mm",res=300)	
-		plotPCsFromSummary(orderBy.PC=orderBy.PC, pcTableSigThreshold=pcTableSigThreshold, numbGraphResults=numbGraphResults, pc.i=pc.i)
+		plotPCsFromSummary(pca.scores=pca.scores, orderBy.PC=orderBy.PC, pcTableSigThreshold=pcTableSigThreshold, numbGraphResults=numbGraphResults, pc.i=pc.i)
 		dev.off()	
 	}
 	#par(op)
 }
 
 
-plotPCsFromSummary <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =15, pc.i=1)  {
+plotPCsFromSummary <- function(pca.scores, orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =15, pc.i=1)  {
 
 	sigTable <- subset(summmaryPcResultList[[pc.i]],summmaryPcResultList[[pc.i]][,orderBy.PC] < pcTableSigThreshold)
 	sigTable <- sigTable[order(sigTable[,orderBy.PC]),]
@@ -67,7 +68,7 @@ plotPCsFromSummary <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e
 
 	# could try strwrp or substr
 	compHead <- paste("Comp.",pc.i,sep="")
-	baseScore <- data.frame(score=ubi.pca.5.scores[,compHead],group="                            All Proteins")
+	baseScore <- data.frame(score=pca.scores[,compHead],group="                            All Proteins")
 	groupTable <- baseScore
 	plotList <- list()
 	for(i in 1:nrow(plotTable))  {
@@ -79,7 +80,7 @@ plotPCsFromSummary <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e
 			goID <- paste("CLUSTER", plotTable$bestCluster[i])
 		}
 		groupTable <- addGroupScoresToGroupTable(groupTable=groupTable,groupIds=plotList[[i]],
-					groupName=goID,scoreTable=ubi.pca.5.scores,
+					groupName=goID,scoreTable=pca.scores,
 					idColumn="spAccession",scoreColum=compHead)
 	}
 
@@ -99,3 +100,20 @@ plotPCsFromSummary <- function(orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e
 	       } )
 	)
 }
+
+
+
+
+##################################
+
+
+bwPlotsAsPdf(pca.scores=tss.pca.score.annot, orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =10)
+bwPlotsAsPdf(pca.scores=tss.pca.score.annot, orderBy.PC="elimAbsWilcox", pcTableSigThreshold=1.0e-03, numbGraphResults =10)
+bwPlotsAsPdf(pca.scores=tss.pca.score.annot, orderBy.PC="elimKS", pcTableSigThreshold=1.0e-05, numbGraphResults =10)
+
+bwPlotsAsPdf(pca.scores=tss.pca.score.annot, orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-05, numbGraphResults =11)
+
+
+bwPlotsAsFigs(pca.scores=tss.pca.score.annot, orderBy.PC="elimWilcox", pcTableSigThreshold=1.0e-04, numbGraphResults =10)
+bwPlotsAsFigs(pca.scores=tss.pca.score.annot, orderBy.PC="elimAbsWilcox", pcTableSigThreshold=1.0e-03, numbGraphResults =10)
+bwPlotsAsFigs(pca.scores=tss.pca.score.annot, orderBy.PC="elimKS", pcTableSigThreshold=1.0e-05, numbGraphResults =10)
