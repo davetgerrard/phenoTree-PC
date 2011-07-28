@@ -19,11 +19,11 @@ old.o <- options(scipen=999)
 
 # run Gene set enrichment on tss.pca.scores
 
-
+setwd("C:/Users/dave/HalfStarted/PhenotypeTree/")
 tss.pca.scores <- read.delim("output/tss.pca.score.tab", header=T)
 
 
-setwd("C:/Users/dave/HalfStarted/PhenotypeTree/")
+
 
 tss.pca.score.annot  <- tss.pca.scores
 tss.pca.score.annot$binRef  <- row.names(tss.pca.score.annot)
@@ -67,7 +67,7 @@ listProtsInGo <- function(goTerm,ontology)  {
 
 geneList <- tss.pca.score.annot$Comp.1
 names(geneList) <- tss.pca.score.annot$spAccession
-nodeSize
+#nodeSize
 
 GOdata.BP <- new("topGOdata",
   description =  "Histone mods data set",

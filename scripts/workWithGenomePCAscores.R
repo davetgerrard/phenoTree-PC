@@ -14,7 +14,7 @@ setwd("C:/Users/dave/HalfStarted/PhenotypeTree/binCountsTest/")
 
 
 
-filteredChromSet.pca.6.scores <- read.delim("filteredChromSet.p2ca.6.scores.whole.genome.tab", header=T)
+filteredChromSet.pca.6.scores <- read.delim("output/filteredChromSet.pca.6.scores.whole.genome.tab", header=T)
 
 
 

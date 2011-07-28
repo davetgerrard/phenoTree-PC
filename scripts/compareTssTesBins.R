@@ -8,6 +8,8 @@
 ######################################################
 old.o <- options(scipen=999)  
 
+setwd("C:/Users/dave/HalfStarted/PhenotypeTree/")
+
 #previous sequence
 
 

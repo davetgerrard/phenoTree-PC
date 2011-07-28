@@ -42,6 +42,10 @@ topDiffGenesReturnAll <- function(allScore) {
   return(allScore )
 }
 
+
+
+
+
 ######################### MAIN
 
 prot2go <-  readMappings("C:/Users/dave/LiverProteins/data/go2prot.map")

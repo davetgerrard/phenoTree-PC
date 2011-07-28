@@ -41,6 +41,20 @@ text(loadings(filteredChromSet.pca)[,1], loadings(filteredChromSet.pca)[,5],
 plot(loadings(filteredChromSet.pca)[,1], loadings(filteredChromSet.pca)[,6], xlim=c(-1,1), xlab="PC1", ylab="PC6")
 text(loadings(filteredChromSet.pca)[,1], loadings(filteredChromSet.pca)[,6], 
 	row.names(loadings(filteredChromSet.pca)[]), cex=0.7, pos=4) ;abline(v=0,lty=2) ; abline(h=0,lty=2)
+
+shortNames <- row.names(loadings(filteredChromSet.pca)[])
+pchValue <- rep(15, length(shortNames))
+pchValue[grep("H3K27",row.names(loadings(filteredChromSet.pca)[]))] <- 1
+shortNames <- sub("H3K4me3.", "", shortNames)
+shortNames <- sub("H3K27me3.", "", shortNames)
+
+plot(loadings(filteredChromSet.pca)[,4], loadings(filteredChromSet.pca)[,5], xlim=c(-1,1), xlab="PC4", ylab="PC5", pch= pchValue)
+mtext("A", 3, 1, adj = 0)
+legend("bottomleft", c("H3K4me3", "H3K27me3"), pch=c(15,1))
+text(loadings(filteredChromSet.pca)[,4], loadings(filteredChromSet.pca)[,5], 
+	shortNames, cex=0.8, pos=4) 
+abline(v=0,lty=2); abline(h=0,lty=2)
+
 dev.off()
 
 
